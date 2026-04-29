@@ -1,0 +1,580 @@
+{
+  "100 Meter Street": [
+    36.2745067,
+    44.0912974
+  ],
+  "101 Complex": [
+    36.2016834,
+    43.9732326
+  ],
+  "120 Meter Street": [
+    36.2799617,
+    43.958727
+  ],
+  "121 Gulan (Gulan 1)": [
+    36.2006724,
+    44.0475723
+  ],
+  "150m Street": [
+    36.6653002,
+    44.5467226
+  ],
+  "159 Gulan (Gulan 2)": null,
+  "32 Park (Sarbasti)": [
+    36.1812823,
+    43.9517854
+  ],
+  "40 Meter Street": [
+    36.2662265,
+    44.0890123
+  ],
+  "5 Hasarok": [
+    36.1917118,
+    44.0816341
+  ],
+  "60 Meter Street": [
+    36.2799617,
+    43.958727
+  ],
+  "7 Nisan": null,
+  "8 Hasarok": [
+    36.1890191,
+    44.0908704
+  ],
+  "92 Zanko (11 Athar)": null,
+  "99 Zanko": [
+    36.1557113,
+    44.0279332
+  ],
+  "Address Erbil": [
+    36.2057114,
+    43.984215
+  ],
+  "Alaska Towers": [
+    36.1830429,
+    43.9466997
+  ],
+  "American Village": [
+    36.3144323,
+    44.1609002
+  ],
+  "Anjumani waziyran street": null,
+  "Ankawa 128": [
+    36.2283587,
+    43.9953348
+  ],
+  "Ara Tower": [
+    36.1954756,
+    43.9681842
+  ],
+  "Aram Tower": null,
+  "Aram Village 2": [
+    36.244784,
+    44.0418447
+  ],
+  "Aram village": [
+    36.2509941,
+    44.0455075
+  ],
+  "Aras": [
+    36.3352799,
+    44.1617464
+  ],
+  "Asco International City": [
+    36.253965,
+    44.0765493
+  ],
+  "Asco Village": null,
+  "Atlantic City": [
+    36.2173353,
+    44.1501024
+  ],
+  "Azadi": [
+    36.8172222,
+    44.3451736
+  ],
+  "Badawa": [
+    36.1684409,
+    44.0404439
+  ],
+  "Baghlumnara": null,
+  "Bahrka Road": [
+    36.2196871,
+    44.0108758
+  ],
+  "Bakhtyari": [
+    36.2058727,
+    43.9946753
+  ],
+  "Bakhtyary Twin Towers": null,
+  "Basta Pyaza": null,
+  "Bata Street": [
+    36.1884702,
+    44.0079023
+  ],
+  "Beirut Palace": null,
+  "Beverly Hills": null,
+  "Boulevard": null,
+  "Brayaty": [
+    36.5017557,
+    44.3416865
+  ],
+  "Cavalli Tower": [
+    36.206243,
+    43.9849882
+  ],
+  "Central Park": [
+    36.1654333,
+    44.0211158
+  ],
+  "Centro Tower": null,
+  "Darwazay Hawler": [
+    36.2642863,
+    44.0881709
+  ],
+  "Davos City": null,
+  "Diplomati Safiran": [
+    36.2276155,
+    44.0451087
+  ],
+  "Diyari City": [
+    36.1548502,
+    43.9070987
+  ],
+  "Dream City": [
+    36.2064126,
+    43.9768025
+  ],
+  "Empire Business Towers": null,
+  "Empire Diamond": null,
+  "Empire Pearl Towers": null,
+  "Empire Royal Apartment": null,
+  "Empire Royal Villa": null,
+  "Empire Square": [
+    36.2026936,
+    43.9667351
+  ],
+  "Empire Wings": [
+    36.2005101,
+    43.9689595
+  ],
+  "English Tower": null,
+  "English Village": [
+    36.192909,
+    43.9714309
+  ],
+  "Erbil Garden": [
+    36.2189596,
+    44.0409132
+  ],
+  "Erbil One Tower": null,
+  "Eskan Towers": null,
+  "Family Mall": [
+    36.2101508,
+    44.0457382
+  ],
+  "Farmanbaran": [
+    36.151823,
+    44.0656309
+  ],
+  "Floria City": [
+    36.2008627,
+    44.1096164
+  ],
+  "Four Season Park": null,
+  "Future City": [
+    36.2405905,
+    44.0762671
+  ],
+  "Galiawa": [
+    36.0129729,
+    44.1953752
+  ],
+  "Ganjan City": [
+    36.2898564,
+    44.050888
+  ],
+  "Ganjan Life": null,
+  "Gaznay Nwe": null,
+  "Gird Jutyar": [
+    36.2687324,
+    43.9942636
+  ],
+  "Global City": [
+    36.2151875,
+    44.1333044
+  ],
+  "Green Land": [
+    36.3084255,
+    44.1731407
+  ],
+  "Green World": [
+    36.2110263,
+    43.9661221
+  ],
+  "Gulan Park World Trade Center": [
+    36.2130387,
+    43.9931836
+  ],
+  "Gulan Tower": null,
+  "Gwer Road": [
+    36.1584087,
+    43.8828719
+  ],
+  "Havalan": [
+    36.1926917,
+    44.0491705
+  ],
+  "Hawari Shar": [
+    36.1603527,
+    44.0990921
+  ],
+  "Hawler City": [
+    36.1911744,
+    44.0094145
+  ],
+  "Hawlery Nwe": [
+    36.2049118,
+    44.0709907
+  ],
+  "Hay Dhubat": null,
+  "Hiwa City": [
+    36.2063547,
+    44.0936467
+  ],
+  "Italian Village 1": [
+    36.1878766,
+    43.9678721
+  ],
+  "Italian village 2": [
+    36.2107465,
+    43.9743014
+  ],
+  "Kani": [
+    36.132458,
+    44.619686
+  ],
+  "Kany Kasa": [
+    36.2777211,
+    44.016538
+  ],
+  "Khanzad (Dolarawa)": null,
+  "Kirkuk Road": [
+    36.1803639,
+    44.0121815
+  ],
+  "Kore": [
+    36.3999285,
+    44.2369061
+  ],
+  "Kore Tower 5": [
+    36.3999285,
+    44.2369061
+  ],
+  "Korean Village": [
+    36.2856847,
+    44.0662475
+  ],
+  "Koya Road": [
+    36.2001993,
+    44.0885237
+  ],
+  "Kurdistan City": [
+    36.2932099,
+    44.0591208
+  ],
+  "Kurdstan": [
+    36.6458307,
+    44.5441484
+  ],
+  "Kwestan (Qadisya)": null,
+  "Lalav Airport View": [
+    36.2115119,
+    43.961408
+  ],
+  "Lalav City": [
+    36.2921983,
+    44.0239586
+  ],
+  "Lalav City View": [
+    36.2184986,
+    44.0650902
+  ],
+  "Lalav Sky View": [
+    36.1808373,
+    43.9703569
+  ],
+  "Lalav Sun Towers": null,
+  "Lalav Twin Towers": null,
+  "Lana City": [
+    36.2213833,
+    44.1461297
+  ],
+  "Lavender Skyline Tower": null,
+  "Lebanese Village": [
+    36.2592698,
+    44.0118967
+  ],
+  "Life Towers": [
+    36.1813361,
+    43.9502565
+  ],
+  "London Towers": [
+    36.203801,
+    43.9832916
+  ],
+  "MNW Towers": null,
+  "MRF 2 Towers": null,
+  "MRF 4 Towers": [
+    36.1962234,
+    43.9655545
+  ],
+  "MRF 5 Towers": [
+    36.1947432,
+    43.9645707
+  ],
+  "MRF Quattro Towers": [
+    36.2160561,
+    44.003524
+  ],
+  "MRF Towers": [
+    36.1951592,
+    43.9648602
+  ],
+  "Mamostayani Zanko": null,
+  "Mantkawa": [
+    36.1616467,
+    44.0202433
+  ],
+  "Mass City": [
+    36.2340508,
+    44.0720016
+  ],
+  "Mass Hills": [
+    36.2492543,
+    44.0544569
+  ],
+  "Mass Village": [
+    36.2297697,
+    44.0651
+  ],
+  "Massif Road": [
+    36.3774191,
+    44.2029254
+  ],
+  "Minara Village": null,
+  "Mini Slava": [
+    36.2191178,
+    44.0648484
+  ],
+  "Mountain View": [
+    36.2274911,
+    44.0769167
+  ],
+  "Naz City(Zakaria Apartments)": null,
+  "Naz Naz": [
+    36.214268,
+    43.9837262
+  ],
+  "New Azadi (Atconz)": null,
+  "New Bahrka": null,
+  "New Eskan": [
+    36.1765715,
+    44.02261
+  ],
+  "New Industrial Zone": null,
+  "New Langa Bazar": null,
+  "New Sarbasti (8 Turaq)": null,
+  "Newroz Tower": null,
+  "Nice Village": null,
+  "Nishteman": null,
+  "Nusaran": [
+    36.210052,
+    44.0056511
+  ],
+  "Old Ankawa": [
+    36.2525412,
+    43.9926149
+  ],
+  "Olive City": null,
+  "Olive Garden City": null,
+  "Pak Land": [
+    36.216026,
+    44.1395048
+  ],
+  "Park View": [
+    36.2094724,
+    43.9822229
+  ],
+  "Peshang Towers": [
+    36.2816602,
+    44.0831972
+  ],
+  "Phoenix Tower": null,
+  "Pirmam Road": [
+    36.3402487,
+    44.1727014
+  ],
+  "Pirrash": [
+    36.234088,
+    44.1408298
+  ],
+  "Prime Tower": [
+    36.1373643,
+    44.0167393
+  ],
+  "Qaiwan Mirador": [
+    36.2517136,
+    44.0739554
+  ],
+  "Qarabuy Kori (Bakhtawary)": null,
+  "Qarabuy Rashken (Terminal Plots)": null,
+  "Qarabwy Ganjan": null,
+  "Qoritan": [
+    36.0785691,
+    43.947446
+  ],
+  "Quarter Franchise": null,
+  "Queen Tower": null,
+  "Rami Towers": [
+    36.190889,
+    43.9681759
+  ],
+  "Rasan Towers": null,
+  "Rasty (Adala)": null,
+  "Remas City": [
+    36.2861941,
+    44.1054397
+  ],
+  "Rena Towers": [
+    36.1470681,
+    44.0198864
+  ],
+  "Rona Towers": null,
+  "Roya Tower": [
+    36.1920578,
+    43.9678001
+  ],
+  "Ruby Towers": null,
+  "Runaki": [
+    36.169058,
+    44.0200935
+  ],
+  "Safiran City": [
+    36.2602599,
+    44.0909477
+  ],
+  "Salam Residence": null,
+  "Sarbakhoyi": null,
+  "Sebardan": [
+    36.217028,
+    44.097924
+  ],
+  "Setaqan": [
+    36.1921281,
+    44.0225452
+  ],
+  "Shahan City": [
+    36.2284423,
+    44.125128
+  ],
+  "Shari Andazyaran": null,
+  "Shari Bazrgani": null,
+  "Shari Mamostayan": null,
+  "Shaways": null,
+  "Shekh Ahmad": [
+    36.2055327,
+    44.0288024
+  ],
+  "Shekhashal": null,
+  "Shorsh": [
+    36.2088714,
+    44.0235219
+  ],
+  "Simy Khatwnawa": null,
+  "Siraj Towers": null,
+  "Sky Towers": [
+    36.2239382,
+    44.0093374
+  ],
+  "Slava City": [
+    36.2191046,
+    44.0642912
+  ],
+  "Slava City 2": [
+    36.2191178,
+    44.0648484
+  ],
+  "Spanish Village": [
+    36.2831609,
+    44.0644081
+  ],
+  "Spanish Village 2": [
+    36.2831609,
+    44.0644081
+  ],
+  "Star Towers": [
+    36.2055074,
+    43.9844153
+  ],
+  "Tablo Mall": [
+    36.1716119,
+    44.0135064
+  ],
+  "Tayrawa": [
+    36.198173,
+    44.006741
+  ],
+  "Tobzawa": [
+    36.12044,
+    43.9998209
+  ],
+  "Trpaspeyan Village": null,
+  "Tulip Towers": null,
+  "Unique Towers": null,
+  "Vana Towers": null,
+  "Var Park": [
+    36.2470897,
+    44.0737973
+  ],
+  "Vital Village": [
+    36.1951592,
+    43.9648602
+  ],
+  "Wavey Avenue": null,
+  "Waziran Bakhtyari Street": null,
+  "Wazyiran": null,
+  "White Towers": [
+    36.2088337,
+    43.958496
+  ],
+  "Wow Tower": null,
+  "Zaiton City": [
+    36.1352117,
+    44.0681011
+  ],
+  "Zanayan": [
+    36.1862256,
+    44.0437264
+  ],
+  "Zaner City": [
+    36.2969712,
+    44.044192
+  ],
+  "Zanko Village": [
+    36.1426063,
+    44.0309845
+  ],
+  "Zerin City": [
+    36.2760317,
+    44.0780896
+  ],
+  "Zhyan": [
+    36.1269993,
+    44.0134652
+  ],
+  "Zin City": [
+    36.2524385,
+    44.0621065
+  ]
+}
