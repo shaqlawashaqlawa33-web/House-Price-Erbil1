@@ -75,11 +75,11 @@ def load_models():
     model_rent.fit(X_r, y_r)
     locations = sorted(df['location_clean'].dropna().unique())
     return (model_sale, model_rent, loc_med_sale, loc_med_rent,
-            loc_cnt_sale, loc_cnt_rent, loc_std_rent, loc_ppm2, locations)
+            loc_cnt_sale, loc_cnt_rent, loc_std_rent, loc_ppm2, locations, df)
 
 
 (model_sale, model_rent, loc_med_sale, loc_med_rent,
- loc_cnt_sale, loc_cnt_rent, loc_std_rent, loc_ppm2, locations) = load_models()
+ loc_cnt_sale, loc_cnt_rent, loc_std_rent, loc_ppm2, locations, df) = load_models()
 
 st.set_page_config(page_title="نرخی خانوو - هەرێم",
                    page_icon="🏠", layout="wide")
@@ -173,7 +173,7 @@ with tab2:
         st.error("Star Towers : -17%")
         st.markdown("---")
     st.markdown("### 📊 نرخی ناوەندی بەپێی ناوچە")
-    df_chart = pd.read_csv('homele_v2.csv')
+    df_chart = df.copy()
     df_chart['location_clean'] = df_chart['location'].str.split(
         ',').str[0].str.strip()
     purpose_chart = st.radio("جۆر", ["فرۆشتن", "کرێ"], horizontal=True)
