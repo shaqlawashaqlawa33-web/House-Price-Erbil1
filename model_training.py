@@ -195,3 +195,58 @@ with tab2:
     c1.metric("سەرچاوە", "homele.com")
     c2.metric("خانووی فرۆشتن", "1,288")
     c3.metric("خانووی کرێ", "1,129")
+    st.markdown("---")
+    st.markdown("### 🗺️ مەپی ناوچەکان")
+
+    import folium
+    import json
+    from streamlit_folium import st_folium
+
+    with open('coords.json', 'r', encoding='utf-8') as f:
+        coords_map = json.load(f)
+
+    map_purpose = st.radio(
+        "جۆری مەپ", ["فرۆشتن", "کرێ"], horizontal=True, key="map_radio")
+
+    if "فرۆشتن" in map_purpose:
+        price_data = df[df['purpose'].str.contains('Sale', na=False)].groupby(
+            'location_clean')['price'].median()
+    else:
+        price_data = df[df['purpose'].str.contains('Rent', na=False)].groupby(
+            'location_clean')['price'].median()
+
+    m = folium.Map(location=[36.1911, 44.0092],
+                   zoom_start=13, tiles='CartoDB positron')
+
+    for loc, coord in coords_map.items():
+        if coord is None:
+            continue
+        if coord[0] < 36.0 or coord[0] > 36.5:
+            continue
+        if coord[1] < 43.8 or coord[1] > 44.4:
+            continue
+
+        price = price_data.get(loc, None)
+        cnt = df[df['location_clean'] == loc].shape[0]
+
+        if price and price > 200000:
+            color = 'red'
+        elif price and price > 100000:
+            color = 'orange'
+        else:
+            color = 'green'
+
+        popup_text = f"<b>{loc}</b><br>خانووی کۆ: {cnt}<br>"
+        if price:
+            popup_text += f"نرخی ناوەند: ${price:,.0f}"
+
+        folium.CircleMarker(
+            location=coord,
+            radius=8,
+            color=color,
+            fill=True,
+            fill_opacity=0.7,
+            popup=folium.Popup(popup_text, max_width=200)
+        ).add_to(m)
+
+    st_folium(m, width=700, height=450)
