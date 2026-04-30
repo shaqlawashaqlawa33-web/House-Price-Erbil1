@@ -442,7 +442,7 @@ with tab1:
                     <div class="result-card">
                         <p>✅ کرێی مانگانەی پێشبینیکراو</p>
                         <h2>${pred:,.0f}<span style="font-size:1rem; font-weight:400;">/مانگ</span></h2>
-                        <p>{'🛋️ ئامێردار' if is_furnished else '🏠 بێ ئامێر'} &nbsp;|&nbsp; 📍 {loc}</p>
+                        <p> nbsp; 📍 {loc}</p>
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -457,14 +457,13 @@ with tab1:
                         🏠 بەرزی خانوو: <b>{area} m²</b><br>
                         🛏 ژووری خەو: <b>{beds}</b> &nbsp;|&nbsp; 🚿 حەمام: <b>{baths}</b><br>
                         {'🤝 مامەڵەپێکراو' if is_neg else '💵 نرخی دیاریکراو'}<br>
-                        {'🛋️ ئامێردار' if is_furnished else '🏠 بێ ئامێر'}
                     </div>
                     """, unsafe_allow_html=True)
 
                     if lc < 5:
-                        st.warning(f"⚠️ {loc} تەنها {lc} خانووی هەیە — کەمتر دڵنیابەخشە")
+                        st.warning(f"⚠️ {loc} تەنها {lc} خانووی هەیە — کەمتر دڵنیابەخشە ")
                     if pred < 300:
-                        st.warning("⚠️ کرێی کەمتر لە $300 کەمتر دڵنیابەخشە")
+                        st.warning("⚠️ کرێی کەمتر لە $300  کەمتر دڵنیابەخشە")
 
         else:
             # پلەیسهۆڵدەر
@@ -474,7 +473,7 @@ with tab1:
                         border: 2px dashed #c0cef0; margin-top: 30px;">
                 <div style="font-size: 3rem;">🏠</div>
                 <p style="color: #0f3460; font-size: 1.1rem; font-weight: 600; margin-top: 15px;">
-                    زانیارییەکان پڕ بکەرەوە و دوگمەی پێشبینیکردن داگرە
+                 زانیارییەکان پڕ بکەرەوە و دوگمەی پێشبینیکردن داگرە
                 </p>
                 <p style="color: #888; font-size: 0.9rem;">
                     مۆدێل CV R² = 0.913 بۆ فرۆشتن
