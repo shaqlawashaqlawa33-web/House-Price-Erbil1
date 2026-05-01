@@ -1,6 +1,5 @@
 import streamlit as st
 
-# ===== حەتمی یەکەم بێت =====
 st.set_page_config(
     page_title="نرخی خانوو - هەرێم",
     page_icon="🏠",
@@ -14,7 +13,6 @@ from sklearn.ensemble import GradientBoostingRegressor
 import warnings
 warnings.filterwarnings('ignore')
 
-# ===== ستایل =====
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap');
@@ -27,10 +25,10 @@ st.markdown("""
         margin-bottom: 30px; box-shadow: 0 20px 60px rgba(15,52,96,0.3);
     }
     .hero-header h1 { color: #ffffff !important; font-size: 2.5rem !important; font-weight: 900 !important; margin: 0 !important; }
-    .hero-header p { color: #a8c8f0 !important; font-size: 1rem; margin-top: 8px; }
+    .hero-header p  { color: #a8c8f0 !important; font-size: 1rem; margin-top: 8px; }
 
     [data-testid="metric-container"] {
-        background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+        background: linear-gradient(135deg, #ffffff, #f8faff);
         border: 2px solid #e8f0fe; border-radius: 16px; padding: 20px !important;
         box-shadow: 0 4px 15px rgba(66,133,244,0.1); transition: transform 0.2s;
     }
@@ -39,51 +37,55 @@ st.markdown("""
     [data-testid="stMetricLabel"] { font-size: 0.9rem !important; color: #666 !important; }
 
     .stButton > button {
-        background: linear-gradient(135deg, #0f3460 0%, #1a6bb5 100%) !important;
+        background: linear-gradient(135deg, #0f3460, #1a6bb5) !important;
         color: white !important; border: none !important; border-radius: 12px !important;
         padding: 14px 30px !important; font-size: 1.1rem !important; font-weight: 700 !important;
         width: 100% !important; box-shadow: 0 4px 15px rgba(15,52,96,0.4) !important; transition: all 0.3s !important;
     }
-    .stButton > button:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 25px rgba(15,52,96,0.5) !important; }
+    .stButton > button:hover { transform: translateY(-2px) !important; }
 
     .result-card {
-        background: linear-gradient(135deg, #0f3460 0%, #1a6bb5 100%);
+        background: linear-gradient(135deg, #0f3460, #1a6bb5);
         border-radius: 20px; padding: 30px; color: white; text-align: center;
         margin: 20px 0; box-shadow: 0 15px 40px rgba(15,52,96,0.35);
     }
     .result-card h2 { color: white !important; font-size: 2.5rem !important; font-weight: 900 !important; margin: 10px 0 !important; }
-    .result-card p { color: #a8c8f0 !important; font-size: 1rem; }
+    .result-card p  { color: #a8c8f0 !important; font-size: 1rem; }
 
-    .section-header {
-        color: #1a1a2e !important; font-size: 1.2rem !important; font-weight: 700 !important;
-        border-right: 4px solid #0f3460; padding-right: 12px; margin-bottom: 15px !important;
-        display: block;
+    .fallback-box {
+        background: #fff8e1; border: 2px solid #ffc107; border-radius: 12px;
+        padding: 12px 16px; margin-top: 10px; font-size: 0.9rem; color: #7d5a00;
     }
     .info-box {
         background: #f8faff; border-radius: 12px; padding: 15px;
         margin-top: 15px; border: 1px solid #e0e7ff; line-height: 2;
     }
+    .section-header {
+        color: #1a1a2e !important; font-size: 1.2rem !important; font-weight: 700 !important;
+        border-right: 4px solid #0f3460; padding-right: 12px; margin-bottom: 15px !important; display: block;
+    }
     .stTabs [data-baseweb="tab-list"] {
         background: white; border-radius: 12px; padding: 4px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.06); gap: 4px;
     }
-    .stTabs [data-baseweb="tab"] { border-radius: 8px !important; font-weight: 600 !important; padding: 10px 20px !important; }
-    .stTabs [aria-selected="true"] { background: linear-gradient(135deg, #0f3460, #1a6bb5) !important; color: white !important; }
-
+    .stTabs [data-baseweb="tab"]        { border-radius: 8px !important; font-weight: 600 !important; padding: 10px 20px !important; }
+    .stTabs [aria-selected="true"]      { background: linear-gradient(135deg, #0f3460, #1a6bb5) !important; color: white !important; }
     .footer { text-align: center; color: #999; font-size: 0.85rem; padding: 20px; margin-top: 30px; }
     hr { border: none; border-top: 2px solid #f0f4ff; margin: 25px 0; }
 </style>
 """, unsafe_allow_html=True)
 
 
-# ===== لۆد کردنی مۆدێل =====
+# ================================================================
+# لۆد کردنی مۆدێل
+# ================================================================
 @st.cache_resource
 def load_models():
     df = pd.read_csv('homele_vnew.csv')
     df['location_clean'] = df['location'].str.split(',').str[0].str.strip()
 
-    # ===== مۆدێلی فرۆشتن =====
-    sale = df[df['type'] == 'sale'].copy()
+    # ===== فرۆشتن — bedrooms >= 1 بۆ دەرکردنی کۆمەرسیاڵ =====
+    sale = df[(df['type'] == 'sale') & (df['bedrooms'] >= 1)].copy()
     sale = sale[(sale['price'] >= sale['price'].quantile(0.02)) &
                 (sale['price'] <= sale['price'].quantile(0.98))]
     sale = sale[(sale['area'] > 20) & (sale['area'] < 2000)]
@@ -93,10 +95,15 @@ def load_models():
     loc_std_sale  = sale.groupby('location_clean')['price'].std().fillna(0)
     loc_ppm2_sale = (sale['price'] / sale['area'].replace(0, np.nan)).groupby(sale['location_clean']).median()
 
-    sale['location_median_price'] = sale['location_clean'].map(loc_med_sale)
-    sale['location_count']        = sale['location_clean'].map(loc_cnt_sale)
-    sale['location_price_std']    = sale['location_clean'].map(loc_std_sale)
-    sale['loc_median_per_m2']     = sale['location_clean'].map(loc_ppm2_sale)
+    # گلۆباڵ — بۆ fallback
+    GLOBAL_MED_S  = sale['price'].median()
+    GLOBAL_STD_S  = sale['price'].std()
+    GLOBAL_PPM2_S = (sale['price'] / sale['area']).median()
+
+    sale['location_median_price'] = sale['location_clean'].map(loc_med_sale).fillna(GLOBAL_MED_S)
+    sale['location_count']        = sale['location_clean'].map(loc_cnt_sale).fillna(0)
+    sale['location_price_std']    = sale['location_clean'].map(loc_std_sale).fillna(GLOBAL_STD_S)
+    sale['loc_median_per_m2']     = sale['location_clean'].map(loc_ppm2_sale).fillna(GLOBAL_PPM2_S)
     sale['area_x_loc']            = sale['area'] * sale['location_median_price'] / 1e6
     sale['location_enc']          = sale['location_clean'].astype('category').cat.codes
 
@@ -115,7 +122,7 @@ def load_models():
 
     loc_enc_map = {v: i for i, v in enumerate(sorted(df['location_clean'].dropna().unique()))}
 
-    # ===== مۆدێلی کرێ =====
+    # ===== کرێ =====
     rent = df[df['type'] == 'rent'].copy()
     rent = rent[(rent['price'] >= rent['price'].quantile(0.02)) &
                 (rent['price'] <= rent['price'].quantile(0.98))]
@@ -126,11 +133,15 @@ def load_models():
     loc_std_rent  = rent.groupby('location_clean')['price'].std().fillna(0)
     loc_ppm2_rent = (rent['price'] / rent['area'].replace(0, np.nan)).groupby(rent['location_clean']).median()
 
-    rent['location_median_price'] = rent['location_clean'].map(loc_med_rent)
-    rent['location_count']        = rent['location_clean'].map(loc_cnt_rent)
-    rent['location_price_std']    = rent['location_clean'].map(loc_std_rent)
+    GLOBAL_MED_R  = rent['price'].median()
+    GLOBAL_STD_R  = rent['price'].std()
+    GLOBAL_PPM2_R = (rent['price'] / rent['area']).median()
+
+    rent['location_median_price'] = rent['location_clean'].map(loc_med_rent).fillna(GLOBAL_MED_R)
+    rent['location_count']        = rent['location_clean'].map(loc_cnt_rent).fillna(0)
+    rent['location_price_std']    = rent['location_clean'].map(loc_std_rent).fillna(GLOBAL_STD_R)
     rent['location_cv']           = rent['location_price_std'] / rent['location_median_price'].replace(0, np.nan)
-    rent['loc_median_per_m2']     = rent['location_clean'].map(loc_ppm2_rent)
+    rent['loc_median_per_m2']     = rent['location_clean'].map(loc_ppm2_rent).fillna(GLOBAL_PPM2_R)
     rent['area_x_loc']            = rent['area'] * rent['location_median_price'] / 1e6
 
     rent_f = ['area', 'bedrooms', 'bathrooms', 'is_negotiable', 'is_hot', 'is_verified',
@@ -152,6 +163,8 @@ def load_models():
             loc_cnt_sale, loc_cnt_rent,
             loc_std_sale, loc_std_rent,
             loc_ppm2_sale, loc_ppm2_rent,
+            GLOBAL_MED_S, GLOBAL_STD_S, GLOBAL_PPM2_S,
+            GLOBAL_MED_R, GLOBAL_STD_R, GLOBAL_PPM2_R,
             loc_enc_map, locations, df)
 
 
@@ -160,10 +173,16 @@ def load_models():
  loc_cnt_sale, loc_cnt_rent,
  loc_std_sale, loc_std_rent,
  loc_ppm2_sale, loc_ppm2_rent,
+ GLOBAL_MED_S, GLOBAL_STD_S, GLOBAL_PPM2_S,
+ GLOBAL_MED_R, GLOBAL_STD_R, GLOBAL_PPM2_R,
  loc_enc_map, locations, df) = load_models()
 
+MIN_LOC_COUNT = 5  # ئەگەر کەمتر بوو fallback بەکاردێت
 
-# ===== هێدەر =====
+
+# ================================================================
+# هێدەر
+# ================================================================
 st.markdown("""
 <div class="hero-header">
     <h1>🏠 پێشبینیکردنی نرخی خانوو</h1>
@@ -173,8 +192,9 @@ st.markdown("""
 
 tab1, tab2 = st.tabs(["🔍  پێشبینیکردن", "📊  زانیاری مۆدێل"])
 
+
 # ================================================================
-# TAB 1 - پێشبینیکردن
+# TAB 1 — پێشبینیکردن
 # ================================================================
 with tab1:
     col_form, col_result = st.columns([1, 1], gap="large")
@@ -188,7 +208,7 @@ with tab1:
 
         col_a, col_b = st.columns(2)
         with col_a:
-            beds  = st.slider("🛏 ژووری خەو", 0, 6, 2)
+            beds  = st.slider("🛏 ژووری خەو", 1, 6, 2)
         with col_b:
             baths = st.slider("🚿 حەمام", 1, 5, 2)
 
@@ -206,6 +226,7 @@ with tab1:
         st.markdown("")
         predict_btn = st.button("💰 نرخ پێشبینی بکە", use_container_width=True)
 
+    # ===== ئەنجام =====
     with col_result:
         st.markdown('<span class="section-header">ئەنجامی پێشبینیکردن</span>', unsafe_allow_html=True)
 
@@ -215,10 +236,20 @@ with tab1:
             with st.spinner("مۆدێل کار دەکات..."):
 
                 if "فرۆشتن" in purpose:
-                    lmp  = loc_med_sale.get(loc, loc_med_sale.median())
-                    lc   = loc_cnt_sale.get(loc, 1)
-                    lstd = loc_std_sale.get(loc, 0)
-                    lpm  = loc_ppm2_sale.get(loc, lmp / area if area > 0 else 0)
+                    # fallback logic
+                    cnt = loc_cnt_sale.get(loc, 0)
+                    is_fallback = cnt < MIN_LOC_COUNT
+
+                    if not is_fallback:
+                        lmp  = loc_med_sale[loc]
+                        lstd = loc_std_sale.get(loc, 0)
+                        lpm  = loc_ppm2_sale.get(loc, GLOBAL_PPM2_S)
+                    else:
+                        lmp  = GLOBAL_MED_S
+                        lstd = GLOBAL_STD_S
+                        lpm  = GLOBAL_PPM2_S
+                        cnt  = 0
+
                     lenc = loc_enc_map.get(loc, 0)
 
                     feat = pd.DataFrame([{
@@ -227,7 +258,7 @@ with tab1:
                         'is_off_plan': int(is_off_plan), 'dp_ratio': 0,
                         'has_agency': 1, 'is_ready': int(is_ready),
                         'is_furnished': int(is_furnished),
-                        'location_enc': lenc, 'location_count': lc,
+                        'location_enc': lenc, 'location_count': cnt,
                         'location_median_price': lmp, 'location_price_std': lstd,
                         'loc_median_per_m2': lpm, 'area_x_loc': area * lmp / 1e6
                     }])
@@ -257,29 +288,46 @@ with tab1:
                         🛏 خەو: <b>{beds}</b> &nbsp;|&nbsp; 🚿 حەمام: <b>{baths}</b><br>
                         {'🤝 مامەڵەپێکراو' if is_neg else '💵 نرخی دیاریکراو'}
                         &nbsp;|&nbsp; {'🛋️ ئامێردار' if is_furnished else '🏠 بێ ئامێر'}
+                        &nbsp;|&nbsp; {'✅ ئامادە' if is_ready else '🏗️ ئۆف پلان' if is_off_plan else '⏳ نائامادە'}
                     </div>
                     """, unsafe_allow_html=True)
 
-                    if lc < 5:
-                        st.warning(f"⚠️ {loc}: تەنها {lc} خانووی هەیە")
+                    # fallback ئاگادارکردنەوە
+                    if is_fallback:
+                        st.markdown(f"""
+                        <div class="fallback-box">
+                            ⚠️ <b>{loc}</b> داتای کافی نییە (کەمتر لە {MIN_LOC_COUNT} خانوو).<br>
+                            پێشبینیکردن بەپێی ناوەندی گشتی هەرێم کراوە — کەمتر دڵنیابەخشە.
+                        </div>
+                        """, unsafe_allow_html=True)
+
                     if pred > 500000:
-                        st.warning("⚠️ خانووی لوکس $500k+ — دووری -16% هەیە")
-                    if area > 500:
-                        st.warning("⚠️ خانووی 500m²+ — کەمتر دڵنیابەخشە")
+                        st.warning("⚠️ خانووی لوکس $500k+ — دووری -11% هەیە")
+                    if pred > 300000:
+                        st.warning("⚠️ خانووی $300-500k — دووری -3.7% هەیە")
 
                 else:
-                    lmp = loc_med_rent.get(loc, loc_med_rent.median())
-                    lc  = loc_cnt_rent.get(loc, 1)
-                    ls  = loc_std_rent.get(loc, 0)
-                    lpm = loc_ppm2_rent.get(loc, lmp / area if area > 0 else 0)
-                    lcv = ls / lmp if lmp > 0 else 0
+                    cnt = loc_cnt_rent.get(loc, 0)
+                    is_fallback = cnt < MIN_LOC_COUNT
+
+                    if not is_fallback:
+                        lmp = loc_med_rent[loc]
+                        ls  = loc_std_rent.get(loc, 0)
+                        lpm = loc_ppm2_rent.get(loc, GLOBAL_PPM2_R)
+                        lcv = ls / lmp if lmp > 0 else 0
+                    else:
+                        lmp = GLOBAL_MED_R
+                        ls  = GLOBAL_STD_R
+                        lpm = GLOBAL_PPM2_R
+                        lcv = ls / lmp if lmp > 0 else 0
+                        cnt = 0
 
                     feat = pd.DataFrame([{
                         'area': area, 'bedrooms': beds, 'bathrooms': baths,
                         'is_negotiable': int(is_neg), 'is_hot': 0, 'is_verified': 0,
                         'is_monthly': 1, 'is_furnished': int(is_furnished),
                         'location_median_price': lmp, 'location_price_std': ls,
-                        'location_cv': lcv, 'location_count': lc,
+                        'location_cv': lcv, 'location_count': cnt,
                         'loc_median_per_m2': lpm, 'area_x_loc': area * lmp / 1e6
                     }])
 
@@ -310,8 +358,14 @@ with tab1:
                     </div>
                     """, unsafe_allow_html=True)
 
-                    if lc < 5:
-                        st.warning(f"⚠️ {loc}: تەنها {lc} خانووی هەیە")
+                    if is_fallback:
+                        st.markdown(f"""
+                        <div class="fallback-box">
+                            ⚠️ <b>{loc}</b> داتای کافی نییە (کەمتر لە {MIN_LOC_COUNT} خانوو).<br>
+                            پێشبینیکردن بەپێی ناوەندی گشتی هەرێم کراوە — کەمتر دڵنیابەخشە.
+                        </div>
+                        """, unsafe_allow_html=True)
+
                     if pred < 300:
                         st.warning("⚠️ کرێی کەمتر لە $300 — دووری +15% هەیە")
                     if pred > 1200:
@@ -327,40 +381,46 @@ with tab1:
                     زانیارییەکان پڕ بکەرەوە<br>دوگمەی پێشبینیکردن داگرە
                 </p>
                 <p style="color: #888; font-size: 0.85rem; margin-top: 10px;">
-                    فرۆشتن: CV R² = 0.921 &nbsp;|&nbsp; کرێ: CV R² = 0.811
+                    فرۆشتن: CV R² = 0.950 &nbsp;|&nbsp; کرێ: CV R² = 0.811
                 </p>
             </div>
             """, unsafe_allow_html=True)
 
 
 # ================================================================
-# TAB 2 - زانیاری مۆدێل
+# TAB 2 — زانیاری مۆدێل
 # ================================================================
 with tab2:
-
-    st.markdown("### 📈 بەراوردی مۆدێلەکان — کۆن vs نوێ")
+    st.markdown("### 📈 بەراوردی مۆدێلەکان")
 
     col1, col2 = st.columns(2)
-
     with col1:
         st.markdown("#### 🏠 مۆدێلی فرۆشتن")
-        st.metric("CV R²", "0.921", delta="↑ لە 0.913")
-        st.metric("MAE", "$15,641", delta="↓ لە $24,245", delta_color="inverse")
-        st.metric("Bias گشتی", "-1.7%")
+        st.metric("CV R²", "0.950", delta="↑ لە 0.913 (کۆن)")
+        st.metric("MAE", "$10,359", delta="↓ لە $24,245 (کۆن)", delta_color="inverse")
+        st.metric("Bias گشتی", "-0.71%")
         st.markdown("**ئاگادارییەکان:**")
-        st.error("$500k+ : -16% دووری هەیە")
-        st.warning("$300-500k : -6.5%")
+        st.error("$500k+ : -11% دووری هەیە")
+        st.warning("$300-500k : -3.7%")
         st.success("< $300k : باش ✅")
 
     with col2:
         st.markdown("#### 🏘 مۆدێلی کرێ")
-        st.metric("CV R²", "0.811", delta="↑ لە 0.773")
-        st.metric("MAE", "$61/مانگ", delta="↓ لە $84", delta_color="inverse")
+        st.metric("CV R²", "0.811", delta="↑ لە 0.773 (کۆن)")
+        st.metric("MAE", "$61/مانگ", delta="↓ لە $84 (کۆن)", delta_color="inverse")
         st.metric("Bias گشتی", "-1.4%")
         st.markdown("**ئاگادارییەکان:**")
         st.error("$1200+ : -17% دووری هەیە")
         st.error("< $300 : +15% دووری هەیە")
         st.success("$300-800 : باش ✅")
+
+    st.markdown("---")
+    st.markdown("### 🔧 فیکسەکانی نوێ")
+    st.info("""
+    **١. کۆمەرسیاڵ دەرکرا** — خانووەکانی bedrooms=0 (هۆتێل، دوکان، بینای بازرگانی) لە مۆدێلی فرۆشتن دەرکران. ئەمە CV R² بردە 0.950
+
+    **٢. Fallback بۆ ناوچەی کەم داتا** — ئەگەر ناوچەیەک کەمتر لە 5 خانووی هەبێت (وەک 60 Meter Street، Erbil Garden)، مۆدێل بەپێی ناوەندی گشتی هەرێم پێشبینی دەکات و ئاگادارکردنەوەی نیشان دەدات.
+    """)
 
     st.markdown("---")
     st.markdown("### 📊 نرخی ناوەندی بەپێی ناوچە")
@@ -369,7 +429,12 @@ with tab2:
     df_chart['location_clean'] = df_chart['location'].str.split(',').str[0].str.strip()
     purpose_chart = st.radio("جۆر", ["فرۆشتن", "کرێ"], horizontal=True)
 
-    data_c = df_chart[df_chart['type'] == ('sale' if "فرۆشتن" in purpose_chart else 'rent')]
+    if "فرۆشتن" in purpose_chart:
+        # تەنها residential بۆ چارت
+        data_c = df_chart[(df_chart['type'] == 'sale') & (df_chart['bedrooms'] >= 1)]
+    else:
+        data_c = df_chart[df_chart['type'] == 'rent']
+
     top_locs = (data_c.groupby('location_clean')['price']
                 .agg(['median', 'count'])
                 .query('count >= 5')
@@ -382,7 +447,7 @@ with tab2:
     st.markdown("### 📦 زانیاری داتا")
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("سەرچاوە", "homele.com")
-    c2.metric("فرۆشتن", "3,081")
+    c2.metric("فرۆشتن (residential)", "2,577")
     c3.metric("کرێ", "1,140")
     c4.metric("کۆ", "4,221")
 
@@ -401,7 +466,7 @@ with tab2:
         df['location_clean'] = df['location'].str.split(',').str[0].str.strip()
 
         if "فرۆشتن" in map_purpose:
-            price_data = df[df['type']=='sale'].groupby('location_clean')['price'].median()
+            price_data = df[(df['type']=='sale') & (df['bedrooms']>=1)].groupby('location_clean')['price'].median()
         else:
             price_data = df[df['type']=='rent'].groupby('location_clean')['price'].median()
 
@@ -433,11 +498,13 @@ with tab2:
         st.info("🗺 مەپ بارناکرێت — folium پێویستە نصبکرێت")
 
 
-# ===== فوتەر =====
+# ================================================================
+# فوتەر
+# ================================================================
 st.markdown("""
 <div class="footer">
     🏠 پڕۆژەی پێشبینیکردنی نرخی خانوو — هەرێمی کوردستان<br>
     داتا: homele.com &nbsp;|&nbsp; مۆدێل: Gradient Boosting<br>
-    فرۆشتن CV R² = 0.921 &nbsp;|&nbsp; کرێ CV R² = 0.811
+    فرۆشتن CV R² = 0.950 &nbsp;|&nbsp; کرێ CV R² = 0.811
 </div>
 """, unsafe_allow_html=True)
