@@ -6,7 +6,7 @@ from sklearn.metrics import r2_score, mean_absolute_error
 import warnings
 warnings.filterwarnings('ignore')
 
-df = pd.read_csv('homele_v2.csv')
+df = pd.read_csv('homele_vnew.csv')
 df['rental_frequency'] = df['rental_frequency'].fillna('').astype(str).str.lower()
 df['is_monthly'] = df['rental_frequency'].str.contains('month', na=False).astype(int)
 df['is_yearly']  = df['rental_frequency'].str.contains('year|annual', na=False).astype(int)
