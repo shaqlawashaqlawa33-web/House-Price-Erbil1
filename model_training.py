@@ -144,7 +144,9 @@ def load_models():
     rent['loc_median_per_m2']     = rent['location_clean'].map(loc_ppm2_rent).fillna(GLOBAL_PPM2_R)
     rent['area_x_loc']            = rent['area'] * rent['location_median_price'] / 1e6
 
-    rent_f = ['area', 'bedrooms', 'bathrooms', 'is_negotiable', 'is_hot', 'is_verified',
+    # is_negotiable دەرکرا — confounding variable:
+    # مامەڵە هەیە = خانووی گەورەتر = گرانتر — پێچەوانەی مەبەست
+    rent_f = ['area', 'bedrooms', 'bathrooms', 'is_hot', 'is_verified',
               'is_monthly', 'is_furnished', 'location_median_price', 'location_price_std',
               'location_cv', 'location_count', 'loc_median_per_m2', 'area_x_loc']
 
@@ -222,6 +224,17 @@ with tab1:
         with col_d:
             is_ready    = st.checkbox("✅ ئامادەیە؟")
             is_off_plan = st.checkbox("🏗️ ئۆف پلان؟")
+
+        # ئاگادارکردنەوە بۆ کرێ
+        if "کرێ" in purpose:
+            st.markdown("""
+            <div style="background:#e8f4fd; border:1px solid #90caf9; border-radius:10px;
+                        padding:10px 14px; font-size:0.88rem; color:#1a5276; margin-top:5px;">
+                ℹ️ <b>تێبینی:</b> مامەڵە هەیە/نییە کاریگەری لەسەر مۆدێلی کرێ نییە —
+                چونکە لە داتاکاندا خانووی مامەڵەدار زیاتر گەورەن نە هەرزانتر.
+                نرخی پێشبینیکراو بەپێی بەرزی و ناوچە دەردێت.
+            </div>
+            """, unsafe_allow_html=True)
 
         st.markdown("")
         predict_btn = st.button("💰 نرخ پێشبینی بکە", use_container_width=True)
@@ -324,7 +337,7 @@ with tab1:
 
                     feat = pd.DataFrame([{
                         'area': area, 'bedrooms': beds, 'bathrooms': baths,
-                        'is_negotiable': int(is_neg), 'is_hot': 0, 'is_verified': 0,
+                        'is_hot': 0, 'is_verified': 0,
                         'is_monthly': 1, 'is_furnished': int(is_furnished),
                         'location_median_price': lmp, 'location_price_std': ls,
                         'location_cv': lcv, 'location_count': cnt,
