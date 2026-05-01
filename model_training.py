@@ -423,25 +423,67 @@ with tab2:
     """)
 
     st.markdown("---")
-    st.markdown("### 📊 نرخی ناوەندی بەپێی ناوچە")
+    st.markdown("### 📊 نرخی ناوچەکان")
 
     df_chart = df.copy()
     df_chart['location_clean'] = df_chart['location'].str.split(',').str[0].str.strip()
-    purpose_chart = st.radio("جۆر", ["فرۆشتن", "کرێ"], horizontal=True)
+
+    col_ch1, col_ch2 = st.columns(2)
+    with col_ch1:
+        purpose_chart = st.radio("جۆر", ["فرۆشتن", "کرێ"], horizontal=True)
+    with col_ch2:
+        chart_mode = st.radio(
+            "شێوەی نرخ",
+            ["💰 نرخی کۆتایی", "📐 نرخی هەر م²"],
+            horizontal=True,
+            help="نرخی هەر م² بەراوردکردنی ڕاستتری ناوچەکان دەدات"
+        )
 
     if "فرۆشتن" in purpose_chart:
-        # تەنها residential بۆ چارت
-        data_c = df_chart[(df_chart['type'] == 'sale') & (df_chart['bedrooms'] >= 1)]
+        data_c = df_chart[(df_chart['type'] == 'sale') & (df_chart['bedrooms'] >= 1)].copy()
+        data_c = data_c[(data_c['price'] >= data_c['price'].quantile(0.02)) &
+                        (data_c['price'] <= data_c['price'].quantile(0.98))]
+        data_c = data_c[(data_c['area'] > 20) & (data_c['area'] < 2000)]
     else:
-        data_c = df_chart[df_chart['type'] == 'rent']
+        data_c = df_chart[df_chart['type'] == 'rent'].copy()
+        data_c = data_c[(data_c['price'] >= data_c['price'].quantile(0.02)) &
+                        (data_c['price'] <= data_c['price'].quantile(0.98))]
+        data_c = data_c[(data_c['area'] > 20) & (data_c['area'] < 2000)]
 
-    top_locs = (data_c.groupby('location_clean')['price']
-                .agg(['median', 'count'])
-                .query('count >= 5')
-                .sort_values('median', ascending=False)
-                .head(15))
-    top_locs.columns = ['نرخی ناوەند', 'ژمارەی خانوو']
-    st.bar_chart(top_locs['نرخی ناوەند'])
+    data_c['price_per_m2'] = data_c['price'] / data_c['area']
+
+    if "م²" in chart_mode:
+        # نرخی هەر م²
+        top_locs = (data_c.groupby('location_clean')
+                    .agg(ppm2=('price_per_m2', 'median'), cnt=('price', 'count'))
+                    .query('cnt >= 5')
+                    .sort_values('ppm2', ascending=False)
+                    .head(15))
+        top_locs.columns = ['نرخی هەر م²', 'ژمارەی خانوو']
+
+        st.info("📐 نرخی هەر م² — بەراوردکردنی ڕاستەقینەتر چونکە بەرزی خانوو کاریگەری نییە")
+        st.bar_chart(top_locs['نرخی هەر م²'])
+
+        # جەدوەل
+        st.markdown("**15 ناوچەی بەرزترین نرخی م²:**")
+        top_locs['نرخی هەر م²'] = top_locs['نرخی هەر م²'].apply(lambda x: f"${x:,.0f}")
+        st.dataframe(top_locs, use_container_width=True)
+
+    else:
+        # نرخی کۆتایی
+        top_locs = (data_c.groupby('location_clean')['price']
+                    .agg(['median', 'count'])
+                    .query('count >= 5')
+                    .sort_values('median', ascending=False)
+                    .head(15))
+        top_locs.columns = ['نرخی ناوەند', 'ژمارەی خانوو']
+
+        st.warning("⚠️ نرخی کۆتایی کاریگەری بەرزی خانوو تێدایە — ناوچەی خانووی گەورە دەکرێت بەرزتر دەرکەوێت")
+        st.bar_chart(top_locs['نرخی ناوەند'])
+
+        st.markdown("**15 ناوچەی بەرزترین نرخی کۆتایی:**")
+        top_locs['نرخی ناوەند'] = top_locs['نرخی ناوەند'].apply(lambda x: f"${x:,.0f}")
+        st.dataframe(top_locs, use_container_width=True)
 
     st.markdown("---")
     st.markdown("### 📦 زانیاری داتا")
