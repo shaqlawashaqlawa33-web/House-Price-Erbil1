@@ -84,7 +84,8 @@ streamlit-folium
 
 ```bash
 # ١ — کلۆن بکە
-git clone https://github.com/shaqlawashaqlawa33-web/House-Price-Erbil1.git
+git clone
+https://github.com/shaqlawashaqlawa33-web/House-Price-Erbil1.git
 cd House-Price-Erbil1
 
 # ٢ — پاکێجەکان دامەزرێنە
