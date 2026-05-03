@@ -1,3 +1,7 @@
+import warnings
+from sklearn.ensemble import GradientBoostingRegressor
+import numpy as np
+import pandas as pd
 import streamlit as st
 
 st.set_page_config(
@@ -7,10 +11,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-import pandas as pd
-import numpy as np
-from sklearn.ensemble import GradientBoostingRegressor
-import warnings
 warnings.filterwarnings('ignore')
 
 st.markdown("""
@@ -90,22 +90,26 @@ def load_models():
                 (sale['price'] <= sale['price'].quantile(0.98))]
     sale = sale[(sale['area'] > 20) & (sale['area'] < 2000)]
 
-    loc_med_sale  = sale.groupby('location_clean')['price'].median()
-    loc_cnt_sale  = sale.groupby('location_clean')['price'].count()
-    loc_std_sale  = sale.groupby('location_clean')['price'].std().fillna(0)
-    loc_ppm2_sale = (sale['price'] / sale['area'].replace(0, np.nan)).groupby(sale['location_clean']).median()
+    loc_med_sale = sale.groupby('location_clean')['price'].median()
+    loc_cnt_sale = sale.groupby('location_clean')['price'].count()
+    loc_std_sale = sale.groupby('location_clean')['price'].std().fillna(0)
+    loc_ppm2_sale = (sale['price'] / sale['area'].replace(0,
+                     np.nan)).groupby(sale['location_clean']).median()
 
     # گلۆباڵ — بۆ fallback
-    GLOBAL_MED_S  = sale['price'].median()
-    GLOBAL_STD_S  = sale['price'].std()
+    GLOBAL_MED_S = sale['price'].median()
+    GLOBAL_STD_S = sale['price'].std()
     GLOBAL_PPM2_S = (sale['price'] / sale['area']).median()
 
-    sale['location_median_price'] = sale['location_clean'].map(loc_med_sale).fillna(GLOBAL_MED_S)
-    sale['location_count']        = sale['location_clean'].map(loc_cnt_sale).fillna(0)
-    sale['location_price_std']    = sale['location_clean'].map(loc_std_sale).fillna(GLOBAL_STD_S)
-    sale['loc_median_per_m2']     = sale['location_clean'].map(loc_ppm2_sale).fillna(GLOBAL_PPM2_S)
-    sale['area_x_loc']            = sale['area'] * sale['location_median_price'] / 1e6
-    sale['location_enc']          = sale['location_clean'].astype('category').cat.codes
+    sale['location_median_price'] = sale['location_clean'].map(
+        loc_med_sale).fillna(GLOBAL_MED_S)
+    sale['location_count'] = sale['location_clean'].map(loc_cnt_sale).fillna(0)
+    sale['location_price_std'] = sale['location_clean'].map(
+        loc_std_sale).fillna(GLOBAL_STD_S)
+    sale['loc_median_per_m2'] = sale['location_clean'].map(
+        loc_ppm2_sale).fillna(GLOBAL_PPM2_S)
+    sale['area_x_loc'] = sale['area'] * sale['location_median_price'] / 1e6
+    sale['location_enc'] = sale['location_clean'].astype('category').cat.codes
 
     sale_f = ['area', 'bedrooms', 'bathrooms', 'is_negotiable', 'is_hot', 'is_verified',
               'is_off_plan', 'dp_ratio', 'has_agency', 'is_ready', 'is_furnished',
@@ -120,7 +124,8 @@ def load_models():
         subsample=0.8, min_samples_leaf=5, random_state=42)
     model_sale.fit(X_s, y_s)
 
-    loc_enc_map = {v: i for i, v in enumerate(sorted(df['location_clean'].dropna().unique()))}
+    loc_enc_map = {v: i for i, v in enumerate(
+        sorted(df['location_clean'].dropna().unique()))}
 
     # ===== کرێ =====
     rent = df[df['type'] == 'rent'].copy()
@@ -128,21 +133,26 @@ def load_models():
                 (rent['price'] <= rent['price'].quantile(0.98))]
     rent = rent[(rent['area'] > 20) & (rent['area'] < 2000)]
 
-    loc_med_rent  = rent.groupby('location_clean')['price'].median()
-    loc_cnt_rent  = rent.groupby('location_clean')['price'].count()
-    loc_std_rent  = rent.groupby('location_clean')['price'].std().fillna(0)
-    loc_ppm2_rent = (rent['price'] / rent['area'].replace(0, np.nan)).groupby(rent['location_clean']).median()
+    loc_med_rent = rent.groupby('location_clean')['price'].median()
+    loc_cnt_rent = rent.groupby('location_clean')['price'].count()
+    loc_std_rent = rent.groupby('location_clean')['price'].std().fillna(0)
+    loc_ppm2_rent = (rent['price'] / rent['area'].replace(0,
+                     np.nan)).groupby(rent['location_clean']).median()
 
-    GLOBAL_MED_R  = rent['price'].median()
-    GLOBAL_STD_R  = rent['price'].std()
+    GLOBAL_MED_R = rent['price'].median()
+    GLOBAL_STD_R = rent['price'].std()
     GLOBAL_PPM2_R = (rent['price'] / rent['area']).median()
 
-    rent['location_median_price'] = rent['location_clean'].map(loc_med_rent).fillna(GLOBAL_MED_R)
-    rent['location_count']        = rent['location_clean'].map(loc_cnt_rent).fillna(0)
-    rent['location_price_std']    = rent['location_clean'].map(loc_std_rent).fillna(GLOBAL_STD_R)
-    rent['location_cv']           = rent['location_price_std'] / rent['location_median_price'].replace(0, np.nan)
-    rent['loc_median_per_m2']     = rent['location_clean'].map(loc_ppm2_rent).fillna(GLOBAL_PPM2_R)
-    rent['area_x_loc']            = rent['area'] * rent['location_median_price'] / 1e6
+    rent['location_median_price'] = rent['location_clean'].map(
+        loc_med_rent).fillna(GLOBAL_MED_R)
+    rent['location_count'] = rent['location_clean'].map(loc_cnt_rent).fillna(0)
+    rent['location_price_std'] = rent['location_clean'].map(
+        loc_std_rent).fillna(GLOBAL_STD_R)
+    rent['location_cv'] = rent['location_price_std'] / \
+        rent['location_median_price'].replace(0, np.nan)
+    rent['loc_median_per_m2'] = rent['location_clean'].map(
+        loc_ppm2_rent).fillna(GLOBAL_PPM2_R)
+    rent['area_x_loc'] = rent['area'] * rent['location_median_price'] / 1e6
 
     # is_negotiable دەرکرا — confounding variable:
     # مامەڵە هەیە = خانووی گەورەتر = گرانتر — پێچەوانەی مەبەست
@@ -159,6 +169,12 @@ def load_models():
     model_rent.fit(X_r, y_r)
 
     locations = sorted(df['location_clean'].dropna().unique())
+
+    from sklearn.model_selection import cross_val_score
+    cv_s = cross_val_score(model_sale, X_s, y_s, cv=5, scoring='r2').mean()
+    cv_r = cross_val_score(model_rent, X_r, y_r, cv=5, scoring='r2').mean()
+    print(f"✅ Sale CV R²: {cv_s:.4f}")
+    print(f"✅ Rent CV R²: {cv_r:.4f}")
 
     return (model_sale, model_rent,
             loc_med_sale, loc_med_rent,
@@ -202,27 +218,30 @@ with tab1:
     col_form, col_result = st.columns([1, 1], gap="large")
 
     with col_form:
-        st.markdown('<span class="section-header">زانیاری خانووەکە</span>', unsafe_allow_html=True)
+        st.markdown(
+            '<span class="section-header">زانیاری خانووەکە</span>', unsafe_allow_html=True)
 
-        purpose  = st.selectbox("🎯 مەبەست", ["فرۆشتن 🏷", "کرێ 🔑"])
+        purpose = st.selectbox("🎯 مەبەست", ["فرۆشتن 🏷", "کرێ 🔑"])
         location = st.selectbox("📍 ناوچە", locations)
-        area     = st.number_input("📐 بەرزی خانوو (م²)", min_value=30, max_value=1000, value=150, step=10)
+        area = st.number_input(
+            "📐 بەرزی خانوو (م²)", min_value=30, max_value=1000, value=150, step=10)
 
         col_a, col_b = st.columns(2)
         with col_a:
-            beds  = st.slider("🛏 ژووری خەو", 1, 6, 2)
+            beds = st.slider("🛏 ژووری خەو", 1, 6, 2)
         with col_b:
             baths = st.slider("🚿 حەمام", 1, 5, 2)
 
         st.markdown("---")
-        st.markdown('<span class="section-header">تایبەتمەندییەکان</span>', unsafe_allow_html=True)
+        st.markdown(
+            '<span class="section-header">تایبەتمەندییەکان</span>', unsafe_allow_html=True)
 
         col_c, col_d = st.columns(2)
         with col_c:
-            is_neg       = st.checkbox("🤝 مامەڵە هەیە؟")
+            is_neg = st.checkbox("🤝 مامەڵە هەیە؟")
             is_furnished = st.checkbox("🛋️ ئامێردار؟")
         with col_d:
-            is_ready    = st.checkbox("✅ ئامادەیە؟")
+            is_ready = st.checkbox("✅ ئامادەیە؟")
             is_off_plan = st.checkbox("🏗️ ئۆف پلان؟")
 
         # ئاگادارکردنەوە بۆ کرێ
@@ -241,7 +260,8 @@ with tab1:
 
     # ===== ئەنجام =====
     with col_result:
-        st.markdown('<span class="section-header">ئەنجامی پێشبینیکردن</span>', unsafe_allow_html=True)
+        st.markdown(
+            '<span class="section-header">ئەنجامی پێشبینیکردن</span>', unsafe_allow_html=True)
 
         if predict_btn:
             loc = str(location).strip()
@@ -254,14 +274,14 @@ with tab1:
                     is_fallback = cnt < MIN_LOC_COUNT
 
                     if not is_fallback:
-                        lmp  = loc_med_sale[loc]
+                        lmp = loc_med_sale[loc]
                         lstd = loc_std_sale.get(loc, 0)
-                        lpm  = loc_ppm2_sale.get(loc, GLOBAL_PPM2_S)
+                        lpm = loc_ppm2_sale.get(loc, GLOBAL_PPM2_S)
                     else:
-                        lmp  = GLOBAL_MED_S
+                        lmp = GLOBAL_MED_S
                         lstd = GLOBAL_STD_S
-                        lpm  = GLOBAL_PPM2_S
-                        cnt  = 0
+                        lpm = GLOBAL_PPM2_S
+                        cnt = 0
 
                     lenc = loc_enc_map.get(loc, 0)
 
@@ -276,9 +296,9 @@ with tab1:
                         'loc_median_per_m2': lpm, 'area_x_loc': area * lmp / 1e6
                     }])
 
-                    pred   = np.expm1(model_sale.predict(feat)[0])
+                    pred = np.expm1(model_sale.predict(feat)[0])
                     margin = pred * 0.08
-                    ppm2   = pred / area
+                    ppm2 = pred / area
 
                     st.markdown(f"""
                     <div class="result-card">
@@ -325,12 +345,12 @@ with tab1:
 
                     if not is_fallback:
                         lmp = loc_med_rent[loc]
-                        ls  = loc_std_rent.get(loc, 0)
+                        ls = loc_std_rent.get(loc, 0)
                         lpm = loc_ppm2_rent.get(loc, GLOBAL_PPM2_R)
                         lcv = ls / lmp if lmp > 0 else 0
                     else:
                         lmp = GLOBAL_MED_R
-                        ls  = GLOBAL_STD_R
+                        ls = GLOBAL_STD_R
                         lpm = GLOBAL_PPM2_R
                         lcv = ls / lmp if lmp > 0 else 0
                         cnt = 0
@@ -344,7 +364,7 @@ with tab1:
                         'loc_median_per_m2': lpm, 'area_x_loc': area * lmp / 1e6
                     }])
 
-                    pred   = np.expm1(model_rent.predict(feat)[0])
+                    pred = np.expm1(model_rent.predict(feat)[0])
                     margin = pred * 0.10
 
                     st.markdown(f"""
@@ -410,7 +430,8 @@ with tab2:
     with col1:
         st.markdown("#### 🏠 مۆدێلی فرۆشتن")
         st.metric("CV R²", "0.950", delta="↑ لە 0.913 (کۆن)")
-        st.metric("MAE", "$10,359", delta="↓ لە $24,245 (کۆن)", delta_color="inverse")
+        st.metric("MAE", "$10,359", delta="↓ لە $24,245 (کۆن)",
+                  delta_color="inverse")
         st.metric("Bias گشتی", "-0.71%")
         st.markdown("**ئاگادارییەکان:**")
         st.error("$500k+ : -11% دووری هەیە")
@@ -420,7 +441,8 @@ with tab2:
     with col2:
         st.markdown("#### 🏘 مۆدێلی کرێ")
         st.metric("CV R²", "0.811", delta="↑ لە 0.773 (کۆن)")
-        st.metric("MAE", "$61/مانگ", delta="↓ لە $84 (کۆن)", delta_color="inverse")
+        st.metric("MAE", "$61/مانگ", delta="↓ لە $84 (کۆن)",
+                  delta_color="inverse")
         st.metric("Bias گشتی", "-1.4%")
         st.markdown("**ئاگادارییەکان:**")
         st.error("$1200+ : -17% دووری هەیە")
@@ -439,7 +461,8 @@ with tab2:
     st.markdown("### 📊 نرخی ناوچەکان")
 
     df_chart = df.copy()
-    df_chart['location_clean'] = df_chart['location'].str.split(',').str[0].str.strip()
+    df_chart['location_clean'] = df_chart['location'].str.split(
+        ',').str[0].str.strip()
 
     col_ch1, col_ch2 = st.columns(2)
     with col_ch1:
@@ -453,7 +476,8 @@ with tab2:
         )
 
     if "فرۆشتن" in purpose_chart:
-        data_c = df_chart[(df_chart['type'] == 'sale') & (df_chart['bedrooms'] >= 1)].copy()
+        data_c = df_chart[(df_chart['type'] == 'sale') &
+                          (df_chart['bedrooms'] >= 1)].copy()
         data_c = data_c[(data_c['price'] >= data_c['price'].quantile(0.02)) &
                         (data_c['price'] <= data_c['price'].quantile(0.98))]
         data_c = data_c[(data_c['area'] > 20) & (data_c['area'] < 2000)]
@@ -472,15 +496,34 @@ with tab2:
                     .query('cnt >= 5')
                     .sort_values('ppm2', ascending=False)
                     .head(15))
-        top_locs.columns = ['نرخی هەر م²', 'ژمارەی خانوو']
 
-        st.info("📐 نرخی هەر م² — بەراوردکردنی ڕاستەقینەتر چونکە بەرزی خانوو کاریگەری نییە")
-        st.bar_chart(top_locs['نرخی هەر م²'])
+        st.info(
+            "📐 نرخی هەر م² — بەراوردکردنی ڕاستەقینەتر چونکە بەرزی خانوو کاریگەری نییە")
 
-        # جەدوەل
+        # رەنگی ستونەکان بەپێی نرخ
+        import plotly.express as px
+        top_locs_reset = top_locs.reset_index()
+        top_locs_reset.columns = ['ناوچە', 'نرخی هەر م²', 'ژمارەی خانوو']
+        top_locs_reset['رەنگ'] = top_locs_reset['نرخی هەر م²'].apply(
+            lambda x: '🔴 گران' if x > 800 else ('🟡 ناوەند' if x > 500 else '🟢 ئەرزان'))
+
+        fig = px.bar(top_locs_reset, x='ناوچە', y='نرخی هەر م²',
+                     color='رەنگ',
+                     color_discrete_map={
+                         '🔴 گران': '#e74c3c', '🟡 ناوەند': '#f39c12', '🟢 ئەرزان': '#27ae60'},
+                     text='نرخی هەر م²')
+        fig.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+        fig.update_layout(
+            xaxis_tickangle=-45, showlegend=True, height=450,
+            yaxis=dict(tickformat='$,.0f')
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
         st.markdown("**15 ناوچەی بەرزترین نرخی م²:**")
-        top_locs['نرخی هەر م²'] = top_locs['نرخی هەر م²'].apply(lambda x: f"${x:,.0f}")
-        st.dataframe(top_locs, use_container_width=True)
+        top_locs_reset['نرخی هەر م²'] = top_locs_reset['نرخی هەر م²'].apply(
+            lambda x: f"${x:,.0f}")
+        st.dataframe(top_locs_reset[[
+                     'ناوچە', 'نرخی هەر م²', 'ژمارەی خانوو', 'رەنگ']], use_container_width=True)
 
     else:
         # نرخی کۆتایی
@@ -491,12 +534,32 @@ with tab2:
                     .head(15))
         top_locs.columns = ['نرخی ناوەند', 'ژمارەی خانوو']
 
-        st.warning("⚠️ نرخی کۆتایی کاریگەری بەرزی خانوو تێدایە — ناوچەی خانووی گەورە دەکرێت بەرزتر دەرکەوێت")
-        st.bar_chart(top_locs['نرخی ناوەند'])
+        st.warning(
+            "⚠️ نرخی کۆتایی کاریگەری بەرزی خانوو تێدایە — ناوچەی خانووی گەورە دەکرێت بەرزتر دەرکەوێت")
+
+        import plotly.express as px
+        top_locs_reset = top_locs.reset_index()
+        top_locs_reset.columns = ['ناوچە', 'نرخی ناوەند', 'ژمارەی خانوو']
+        top_locs_reset['رەنگ'] = top_locs_reset['نرخی ناوەند'].apply(
+            lambda x: '🔴 گران' if x > 200000 else ('🟡 ناوەند' if x > 100000 else '🟢 ئەرزان'))
+
+        fig = px.bar(top_locs_reset, x='ناوچە', y='نرخی ناوەند',
+                     color='رەنگ',
+                     color_discrete_map={
+                         '🔴 گران': '#e74c3c', '🟡 ناوەند': '#f39c12', '🟢 ئەرزان': '#27ae60'},
+                     text='نرخی ناوەند')
+        fig.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+        fig.update_layout(
+            xaxis_tickangle=-45, showlegend=True, height=450,
+            yaxis=dict(tickformat='$,.0f')
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
         st.markdown("**15 ناوچەی بەرزترین نرخی کۆتایی:**")
-        top_locs['نرخی ناوەند'] = top_locs['نرخی ناوەند'].apply(lambda x: f"${x:,.0f}")
-        st.dataframe(top_locs, use_container_width=True)
+        top_locs_reset['نرخی ناوەند'] = top_locs_reset['نرخی ناوەند'].apply(
+            lambda x: f"${x:,.0f}")
+        st.dataframe(top_locs_reset[[
+                     'ناوچە', 'نرخی ناوەند', 'ژمارەی خانوو', 'رەنگ']], use_container_width=True)
 
     st.markdown("---")
     st.markdown("### 📦 زانیاری داتا")
@@ -517,15 +580,19 @@ with tab2:
         with open('coords.json', 'r', encoding='utf-8') as f:
             coords_map = json.load(f)
 
-        map_purpose = st.radio("جۆری مەپ", ["فرۆشتن", "کرێ"], horizontal=True, key="map_radio")
+        map_purpose = st.radio(
+            "جۆری مەپ", ["فرۆشتن", "کرێ"], horizontal=True, key="map_radio")
         df['location_clean'] = df['location'].str.split(',').str[0].str.strip()
 
         if "فرۆشتن" in map_purpose:
-            price_data = df[(df['type']=='sale') & (df['bedrooms']>=1)].groupby('location_clean')['price'].median()
+            price_data = df[(df['type'] == 'sale') & (df['bedrooms'] >= 1)].groupby(
+                'location_clean')['price'].median()
         else:
-            price_data = df[df['type']=='rent'].groupby('location_clean')['price'].median()
+            price_data = df[df['type'] == 'rent'].groupby('location_clean')[
+                'price'].median()
 
-        m = folium.Map(location=[36.1911, 44.0092], zoom_start=13, tiles='CartoDB positron')
+        m = folium.Map(location=[36.1911, 44.0092],
+                       zoom_start=13, tiles='CartoDB positron')
 
         for loc_name, coord in coords_map.items():
             if coord is None:
@@ -534,8 +601,9 @@ with tab2:
                 continue
 
             price = price_data.get(loc_name, None)
-            cnt   = df[df['location_clean'] == loc_name].shape[0]
-            color = 'red' if (price and price > 200000) else 'orange' if (price and price > 100000) else 'green'
+            cnt = df[df['location_clean'] == loc_name].shape[0]
+            color = 'red' if (price and price > 200000) else 'orange' if (
+                price and price > 100000) else 'green'
 
             popup_text = f"<b>{loc_name}</b><br>خانووی کۆ: {cnt}<br>"
             if price:
