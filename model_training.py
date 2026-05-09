@@ -458,6 +458,112 @@ with tab2:
     """)
 
     st.markdown("---")
+    st.markdown("### 🔍 بەراوردی ناوچەکان")
+
+    # داتا ئامادەبکە
+    df_cmp = df.copy()
+    df_cmp['location_clean'] = df_cmp['location'].str.split(',').str[0].str.strip()
+
+    sale_cmp = df_cmp[(df_cmp['type'] == 'sale') & (df_cmp['bedrooms'] >= 1)].copy()
+    sale_cmp = sale_cmp[(sale_cmp['price'] >= sale_cmp['price'].quantile(0.02)) &
+                        (sale_cmp['price'] <= sale_cmp['price'].quantile(0.98))]
+    sale_cmp = sale_cmp[(sale_cmp['area'] > 20) & (sale_cmp['area'] < 2000)]
+    sale_cmp['ppm2'] = sale_cmp['price'] / sale_cmp['area']
+
+    rent_cmp = df_cmp[df_cmp['type'] == 'rent'].copy()
+    rent_cmp = rent_cmp[(rent_cmp['price'] >= rent_cmp['price'].quantile(0.02)) &
+                        (rent_cmp['price'] <= rent_cmp['price'].quantile(0.98))]
+    rent_cmp = rent_cmp[(rent_cmp['area'] > 20) & (rent_cmp['area'] < 2000)]
+
+    good_locs_cmp = sale_cmp.groupby('location_clean')['price'].count()
+    good_locs_cmp = good_locs_cmp[good_locs_cmp >= 5].index.tolist()
+
+    sale_stats = sale_cmp[sale_cmp['location_clean'].isin(good_locs_cmp)].groupby('location_clean').agg(
+        sale_count=('price', 'count'), sale_median=('price', 'median'),
+        sale_ppm2=('ppm2', 'median'), sale_area=('area', 'median'), sale_beds=('bedrooms', 'median')
+    ).round(0)
+    rent_stats = rent_cmp[rent_cmp['location_clean'].isin(good_locs_cmp)].groupby('location_clean').agg(
+        rent_count=('price', 'count'), rent_median=('price', 'median')
+    ).round(0)
+    cmp_data = sale_stats.join(rent_stats, how='left').fillna(0).sort_values('sale_median', ascending=False)
+
+    cmp_locs = sorted(cmp_data.index.tolist())
+
+    col_cmp1, col_cmp2 = st.columns(2)
+    with col_cmp1:
+        loc_a = st.selectbox("📍 ناوچەی یەکەم", cmp_locs,
+                             index=cmp_locs.index('Aram Village 2') if 'Aram Village 2' in cmp_locs else 0,
+                             key="cmp_loc_a")
+    with col_cmp2:
+        default_b = 'Rami Towers' if 'Rami Towers' in cmp_locs else (cmp_locs[1] if len(cmp_locs) > 1 else cmp_locs[0])
+        loc_b = st.selectbox("📍 ناوچەی دووەم", cmp_locs,
+                             index=cmp_locs.index(default_b),
+                             key="cmp_loc_b")
+
+    if loc_a and loc_b:
+        a = cmp_data.loc[loc_a]
+        b = cmp_data.loc[loc_b]
+
+        # ستاتیستیک کارتەکان
+        c1, c2, c3, c4 = st.columns(4)
+        diff_sale = int(a['sale_median']) - int(b['sale_median'])
+        diff_ppm2 = int(a['sale_ppm2']) - int(b['sale_ppm2'])
+        c1.metric(f"💰 {loc_a} — فرۆشتن", f"${int(a['sale_median']):,}",
+                  delta=f"{'+' if diff_sale >= 0 else ''}{diff_sale:,} vs {loc_b}")
+        c2.metric(f"💰 {loc_b} — فرۆشتن", f"${int(b['sale_median']):,}")
+        c3.metric(f"📐 {loc_a} — م²", f"${int(a['sale_ppm2']):,}",
+                  delta=f"{'+' if diff_ppm2 >= 0 else ''}{diff_ppm2:,} vs {loc_b}")
+        c4.metric(f"📐 {loc_b} — م²", f"${int(b['sale_ppm2']):,}")
+
+        st.markdown("")
+
+        # چارتی plotly
+        import plotly.graph_objects as go
+        categories = ['نرخی فرۆشتن ($)', 'نرخی م² ($)', 'بەرزی ناوەند (م²)', 'ژووری خەو']
+        vals_a = [int(a['sale_median']), int(a['sale_ppm2']), int(a['sale_area']), int(a['sale_beds'])]
+        vals_b = [int(b['sale_median']), int(b['sale_ppm2']), int(b['sale_area']), int(b['sale_beds'])]
+
+        fig_cmp = go.Figure()
+        fig_cmp.add_trace(go.Bar(name=loc_a, x=categories[:2], y=vals_a[:2],
+                                  marker_color='#185FA5', text=[f"${v:,}" for v in vals_a[:2]],
+                                  textposition='outside'))
+        fig_cmp.add_trace(go.Bar(name=loc_b, x=categories[:2], y=vals_b[:2],
+                                  marker_color='#D85A30', text=[f"${v:,}" for v in vals_b[:2]],
+                                  textposition='outside'))
+        fig_cmp.update_layout(
+            barmode='group', height=350,
+            yaxis=dict(tickformat='$,.0f'),
+            legend=dict(orientation='h', y=1.1),
+            margin=dict(t=40, b=20)
+        )
+        st.plotly_chart(fig_cmp, use_container_width=True)
+
+        # جەدوەلی بەراورد
+        import plotly.graph_objects as go
+        cmp_table = pd.DataFrame({
+            'پێوانە': ['نرخی فرۆشتن', 'نرخی م²', 'بەرزی ناوەند', 'ژووری خەو',
+                       'ژمارەی خانوو', 'کرێی مانگانە', 'داتای کرێ'],
+            loc_a: [f"${int(a['sale_median']):,}", f"${int(a['sale_ppm2']):,}",
+                    f"{int(a['sale_area'])} م²", f"{int(a['sale_beds'])} خەو",
+                    f"{int(a['sale_count'])} خانوو",
+                    f"${int(a['rent_median']):,}/مانگ" if a['rent_median'] > 0 else "—",
+                    f"{int(a['rent_count'])} خانوو" if a['rent_count'] > 0 else "نییە"],
+            loc_b: [f"${int(b['sale_median']):,}", f"${int(b['sale_ppm2']):,}",
+                    f"{int(b['sale_area'])} م²", f"{int(b['sale_beds'])} خەو",
+                    f"{int(b['sale_count'])} خانوو",
+                    f"${int(b['rent_median']):,}/مانگ" if b['rent_median'] > 0 else "—",
+                    f"{int(b['rent_count'])} خانوو" if b['rent_count'] > 0 else "نییە"],
+        })
+        st.dataframe(cmp_table, use_container_width=True, hide_index=True)
+
+        # پوختە
+        cheaper = loc_a if a['sale_ppm2'] < b['sale_ppm2'] else loc_b
+        pct_diff = abs(int(a['sale_ppm2']) - int(b['sale_ppm2'])) / min(int(a['sale_ppm2']), int(b['sale_ppm2'])) * 100
+        more_data = loc_a if a['sale_count'] > b['sale_count'] else loc_b
+        st.info(f"💡 **پوختە:** {cheaper} نرخی م²ی هەرزانتری هەیە بە {pct_diff:.0f}% جیاوازی. "
+                f"{more_data} داتای زیاتری هەیە — پێشبینییەکانی زیاتر دڵنیابەخشن.")
+
+    st.markdown("---")
     st.markdown("### 📊 نرخی ناوچەکان")
 
     df_chart = df.copy()
